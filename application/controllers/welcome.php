@@ -25,20 +25,23 @@ class Welcome extends CI_Controller {
         
         public function get_unidades()
         {
-            $this->db->select('id_unidad, id_unidad_padre, nombre_unidad');
+            $this->db->select('id_unidad as id, id_unidad_padre as parent, nombre_unidad as text');
             $this->db->from('unidad');
             $result = $this->db->get();
             
-            $arreglo = array();
-            
             foreach($result->result_array() as $row)
             {
-                $arreglo[] = $row;
+                /*$arreglo = array(
+                    'id' => $row->id_unidad,
+                    'parent' => $row->id_unidad_padre,
+                    'text' => $row->nombre_unidad
+                );*/
+                echo json_encode($row);
             }
             
             //print_r($arreglo);
             
-            echo json_encode($arreglo);
+            //echo json_encode($arreglo);
         }
 }
 
