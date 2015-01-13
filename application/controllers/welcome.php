@@ -19,14 +19,6 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-            /*$form_data = array(
-                        'ID_PLAN_OPERATIVO' => 'plan_operativo',
-                        'TIPO_EVALUACION' => 'tipo_evaluacion',
-                        'PONDERACION_OBJETIVOS' => 'ponderacion_objetivos',
-                        'PONDERACION_COMPETENCIAS' => 'ponderacion_competencias',
-                        'USUARIO_CREACION' => 'NOMBRE_USUARIO'
-                    );
-            echo json_encode($form_data);*/
             //$this->load->view('tree');
             $this->get_unidades();
 	}
