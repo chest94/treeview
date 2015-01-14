@@ -9,19 +9,33 @@
         <!-- 5 include the minified jstree source -->
         <script src="dist/jstree.min.js"></script>
         <script>
-            $(function () {
+            base_url = '<?= site_url() ?>';
+
+            var datos = obtener_unidad();
+            createJSTrees(datos);
+
+            function createJSTrees(datos) {
                 $("#jstree").jstree({
-                    "core": {
-                        "data": [
-                            {"id": "ajson1", "parent": "#", "text": "Simple root node"},
-                            {"id": "ajson2", "parent": "#", "text": "Root node 2"},
-                            {"id": "ajson3", "parent": "ajson2", "text": "Child 1"},
-                            {"id": "ajson4", "parent": "ajson2", "text": "Child 2"}
-                        ]
+                    "json_data": {
+                        "data": datos
                     },
                     "plugins": ["themes", "json_data", "ui"]
                 });
-            });
+
+            function obtener_unidad()
+            {
+                base_url += "/welcome/get_unidades/";
+
+                //alert(base_url);
+
+                var prueba;
+
+                $.post(base_url, function (a) {
+                    prueba = a;
+                }, "json");
+
+                return prueba;
+            }
         </script>
     </head>
     <body>
