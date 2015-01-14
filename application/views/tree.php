@@ -9,33 +9,55 @@
         <!-- 5 include the minified jstree source -->
         <script src="dist/jstree.min.js"></script>
         <script>
-            base_url = '<?= site_url() ?>';
-
-            var datos = obtener_unidad();
-            createJSTrees(datos);
-
-            function createJSTrees(datos) {
-                $("#jstree").jstree({
-                    "json_data": {
-                        "data": datos
-                    },
-                    "plugins": ["themes", "json_data", "ui"]
-                });
-
-            function obtener_unidad()
-            {
+            $(function () {
+                var base_url = '<?= site_url() ?>';
                 base_url += "/welcome/get_unidades/";
+                $.post(base_url, {}, function (a) {
+                    $('#jstree').jstree({
 
-                //alert(base_url);
+                    "core":{
+                    'data': a
+                    },
+                    
+                    "contextmenu":{
+                        "items": function ($node) {
+                            var tree = $("#tree").jstree(true);
+                            return {
+                                "Create": {
+                                    "separator_before": false,
+                                    "separator_after": true,
+                                    "label": "Crear",
+                                    "action": function (obj) {
+                                        $node = tree.create_node($node);
+                                        tree.edit($node);
+                                    }
+                                },
+                                "Rename": {
+                                    "separator_before": false,
+                                    "separator_after": true,
+                                    "label": "Renombrar",
+                                    "action": function (obj) {
+                                        tree.edit($node);
+                                    }
+                                },
+                                "Remove": {
+                                    "separator_before": false,
+                                    "separator_after": false,
+                                    "label": "Eliminar",
+                                    "action": function (obj) {
+                                        tree.delete_node($node);
+                                    }
+                                }
+                            };
+                        }
+                    },
 
-                var prueba;
-
-                $.post(base_url, function (a) {
-                    prueba = a;
-                }, "json");
-
-                return prueba;
-            }
+                    "plugins":[
+                            "contextmenu", "wholerow"
+                    ]
+                });
+            }, "json");
+            });
         </script>
     </head>
     <body>

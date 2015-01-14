@@ -18,7 +18,9 @@
             {
                 $arreglo[] = $row;
             }
-            
+            /* :v dat musica xD */
+            /* mostrame el JSON que generas */
+            /* ok :p parece bien, */
             echo json_encode($arreglo);
         }
     }
