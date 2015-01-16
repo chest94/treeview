@@ -32,6 +32,8 @@
                         $('#contenedor').append(jsdiv);
                         generarArbol();
                     }, "json");
+                    
+                    return false;
                 });
             });
 
@@ -41,6 +43,7 @@
                 $.post(base_url, {}, function (a) {
                     $('#jstree').jstree({
                         "core": {
+                            "check_callback": true,
                             "themes": {
                                 "icons": false
                             },
@@ -55,28 +58,34 @@
                                         "separator_after": true,
                                         "label": "Renombrar",
                                         "action": function (obj) {
-                                            /*
-                                            generarArbol();
                                             
-                                            var id = $node.id;
-                                            
-                                            var nombre = $('#txtAgregar').val();
-                                            var padre = $('#dropuni').val();
-                                            var data = {
-                                                "nombre": nombre,
-                                                "padre": padre
-                                            }
-                                            var uri = '<?= site_url() ?>';
-                                            uri += "/welcome/editar/";
+                                            var name = $node.text;
+                                            var id   = $node.id;
+                                            $('#nombreNodo').html(name);
+                                            $('#id_unidad').val(id); // x3 
+                                            $('#formularioEditar').css('display', 'block');
+                                            // x3
+                                            $('#formEditar').on('submit', function () {
 
-                                            $.post(uri, data, function (resp) {
-                                                $('#txtAgregar').val("");
-                                                $('#contenedor').html(""); // para vaciarlo
-                                                var jsdiv = $('<div id="jstree"></div>');
-                                                $('#contenedor').append(jsdiv);
-                                                generarArbol();
-                                            }, "json");
-                                        });*/
+                                                var data = {
+                                                    "id" : $('#id_unidad').val(),
+                                                    "nombre": $('#nombre_unidad').val()
+                                                };
+
+                                                var uri = '<?= site_url() ?>';
+                                                uri += "/welcome/editar/";
+
+                                                $.post(uri, data, function (resp) {
+                                                    
+                                                    $('#contenedor').html(""); // para vaciarlo
+                                                    var jsdiv = $('<div id="jstree"></div>');
+                                                    $('#contenedor').append(jsdiv);
+                                                    generarArbol();
+                                                    $('#formularioEditar').css('display','none');
+                                                }, "json");
+                                                
+                                                return false;
+                                            });
                                         }
                                     },
                                     "Remove": {
@@ -84,26 +93,28 @@
                                         "separator_after": false,
                                         "label": "Eliminar",
                                         "action": function (obj) {
-                                            // $node.id
-                                            // $node.tex, etc, justo acá
-                                            // esta es la de elimiacion
-                                            // sacas los datos del nodo y haces la magia con post
-                                            //y cómo valido que sea no sea papi de otros? es que en eso
-                                            //me perdí también porque yo quería mostrar un mensaje de exito 
-                                            //en el anterior y así, y si había un problema un GG xD
-                                            // pues en el anterior mandé el msg si te fijaste, solo que no hice nada con el mensaje
-                                            // en este caso, lo puedes validar de dos formas, del lado del cliente y del lado del server
-                                            /////// LADO DEL CLIENTE
-                                            // para esto tienes que ver primero la estructura del tree a ver como se forma, veamos
-                                            // bueno, por la estructura que tiene veo esto complicado xq tiene demasiadas cosas anidadas, pero 
-                                            // basicamente la idea era contar los elementos anidados con Jquery para saber los hijos, pero se nos va a complicar por la estructura
-                                            ////// LADO DEL SERVER
-                                            // hacer dos peticiones POST anidadas, es decir que una va a ir adentro del function(rep) de la otra
-                                            // la más externa toma el id del nodo y con una consulta en el server ves cuantos hijos tiene, si cero o más
-                                            // y so devuelves al cliente, que en base a ese número vos haces lo que quieres, si no quieres
-                                            // que elimine si tiene hijos mostras el mensaje, si no tiene hijos ejecutas el post interno que borraria el nodo
-                                            //eso va a estar guapo... xD para nada xD en un ratito se saca :p dijo el pro, bueno voy a ver primero lo del edit y después me meto con el 
-                                            //eliminar... chivo, y cualquier cosa me avisas :p
+
+                                            var id = $node.id;
+
+                                            var data = {
+                                                'id': id
+                                            };
+
+                                            var uri = '<?= site_url() ?>';
+                                            uri += "/welcome/eliminar/";
+
+                                            $.post(uri, data, function (resp) {
+                                                if (resp.estado === "true") {
+                                                    alert('Unidad eliminada');
+                                                    $('#contenedor').html(""); // para vaciarlo
+                                                    var jsdiv = $('<div id="jstree"></div>');
+                                                    $('#contenedor').append(jsdiv);
+                                                    generarArbol();
+                                                }
+                                                else {
+                                                    alert('No se puede eliminar la unidad mientras tenga otras unidades asociadas');
+                                                }
+                                            }, "json");
                                         }
                                     }
                                 };
@@ -122,27 +133,43 @@
             <div id="jstree">
             </div>
         </div>
-        
-        <form id="agregar">
-            <input type="text" name="Nombre" id="txtAgregar" required> <br> 
+        <div id="agregar">
+            <form id="agregar">
+                <input type="text" name="Nombre" id="txtAgregar" required> <br> 
 
-            <select class="form-control" id="dropuni">
-                <option value="#">Independiente</option>
-                    <?php 
-                        $query = $this->db->query('select id_unidad, nombre_unidad '
-                                . 'from unidad');
-                        $dropdowns = $query->result();
+                <select class="form-control" id="dropuni">
+                    <option value="#">Independiente</option>
+                    <?php
+                    $query = $this->db->query('select id_unidad, nombre_unidad '
+                            . 'from unidad');
+                    $dropdowns = $query->result();
 
-                        foreach($dropdowns as $row)
-                        { 
-                          echo '<option value="'.$row->id_unidad.'">'.$row->nombre_unidad.'</option>';
-                        }
+                    foreach ($dropdowns as $row) {
+                        echo '<option value="' . $row->id_unidad . '">' . $row->nombre_unidad . '</option>';
+                    }
                     ?>
-            </select>
-            <br>
+                </select>
+                <br>
 
-            <input type="submit" id="btnAgregar" value="Agregar"> <br>
-            
-        </form>
+                <input type="submit" id="btnAgregar" value="Agregar"> <br>
+
+            </form>
+        </div>
+
+        <div id="formularioEditar">
+            <form id="formEditar">
+                Editando nodo "<span id="nombreNodo"></span>"
+                <input type="hidden" id="id_unidad" name="id_unidad"/>
+                <input type="text" name="nombre_unidad" id="nombre_unidad"/>
+                <input type="submit" id="btnEditar" value="Editar"> <br>
+                <form/>
+        </div>
+
+        <style type="text/css">
+            #formularioEditar{
+                display: none;
+            }
+        </style>
+
     </body>
 </html>
