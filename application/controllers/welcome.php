@@ -28,22 +28,32 @@ class Welcome extends CI_Controller {
         if(isset($_POST) && !empty($_POST)){
             $padre  = $_POST['padre'];
             $nombre = $_POST['nombre'];
-    
-            if ($padre == 0) {
-                $padre = "#";
-            }
 
             $unidad = array(
                 'nombre_unidad' => $nombre,
                 'id_unidad_padre' => $padre
             );
-
-  
+            
             $this->db->insert('unidad', $unidad);
+            
         }
-       
         
         echo json_encode(array("msg"=>"fin"));
+    }
+    
+    public function editar(){
+        
+        $id = $_POST['unidad'];
+        
+        $this->db->where('id_unidad', $id);
+        $this->db->update('unidad', $form_data);
+
+        if ($this->db->affected_rows() == '1')
+        {
+            echo json_encode(array("exito"=>"correcto"));
+        }
+
+        echo json_encode(array("fracaso"=>"falso"));
     }
 
 }

@@ -14,23 +14,19 @@
         <script>
             $(function () {
                 generarArbol();
-                 $('#agregar').on('submit', function(){ 
+                $('#agregar').on('submit', function () {
                     var nombre = $('#txtAgregar').val();
-                    var padre  = $('#dropuni').val();
-                    var data   = {
+                    var padre = $('#dropuni').val();
+                    var data = {
                         "nombre": nombre,
-                        "padre" : padre
+                        "padre": padre
                     };
-                    
+
                     var uri = '<?= site_url() ?>';
-                        uri += "/welcome/agregar/";
-                    
-                    $.post(uri, data, function(resp){
-                        // hay algún error, porque no esta llegando aca
-                        //alert('a');
-                        // aca regargas el tree que para eso lo podemos meter en una funcion
-                        // justo aca puedes hacerlo
-                        
+                    uri += "/welcome/agregar/";
+
+                    $.post(uri, data, function (resp) {
+                        $('#txtAgregar').val("");
                         $('#contenedor').html(""); // para vaciarlo
                         var jsdiv = $('<div id="jstree"></div>');
                         $('#contenedor').append(jsdiv);
@@ -38,8 +34,8 @@
                     }, "json");
                 });
             });
-            
-            function generarArbol(){
+
+            function generarArbol() {
                 var base_url = '<?= site_url() ?>';
                 base_url += "/welcome/get_unidades/";
                 $.post(base_url, {}, function (a) {
@@ -59,7 +55,28 @@
                                         "separator_after": true,
                                         "label": "Renombrar",
                                         "action": function (obj) {
-                                            $node.id;
+                                            /*
+                                            generarArbol();
+                                            
+                                            var id = $node.id;
+                                            
+                                            var nombre = $('#txtAgregar').val();
+                                            var padre = $('#dropuni').val();
+                                            var data = {
+                                                "nombre": nombre,
+                                                "padre": padre
+                                            }
+                                            var uri = '<?= site_url() ?>';
+                                            uri += "/welcome/editar/";
+
+                                            $.post(uri, data, function (resp) {
+                                                $('#txtAgregar').val("");
+                                                $('#contenedor').html(""); // para vaciarlo
+                                                var jsdiv = $('<div id="jstree"></div>');
+                                                $('#contenedor').append(jsdiv);
+                                                generarArbol();
+                                            }, "json");
+                                        });*/
                                         }
                                     },
                                     "Remove": {
@@ -105,24 +122,27 @@
             <div id="jstree">
             </div>
         </div>
-            <form id="agregar">
-                <input type="text" name="Nombre" id="txtAgregar" required> <br> 
+        
+        <form id="agregar">
+            <input type="text" name="Nombre" id="txtAgregar" required> <br> 
 
-                <?php
-                // O.o
-                $query = $this->db->query('select id_unidad, nombre_unidad '
-                        . 'from unidad');
-                $dropdowns = $query->result();
-                foreach ($dropdowns as $dropdown) {
-                    $dropDownList[$dropdown->id_unidad] = $dropdown->nombre_unidad;
-                }
+            <select class="form-control" id="dropuni">
+                <option value="#">Independiente</option>
+                    <?php 
+                        $query = $this->db->query('select id_unidad, nombre_unidad '
+                                . 'from unidad');
+                        $dropdowns = $query->result();
 
-                //$finalDropDown = array_merge(array('0' => 'Indepentiende'), $dropDownList);
-                echo form_dropdown('unidad', $dropDownList,'' , 'id = "dropuni"');
-                ?>
-                <br>
+                        foreach($dropdowns as $row)
+                        { 
+                          echo '<option value="'.$row->id_unidad.'">'.$row->nombre_unidad.'</option>';
+                        }
+                    ?>
+            </select>
+            <br>
 
-                <input type="submit" id="btnAgregar" value="Agregar"> <br>
-            </form>
+            <input type="submit" id="btnAgregar" value="Agregar"> <br>
+            
+        </form>
     </body>
 </html>
